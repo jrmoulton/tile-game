@@ -1,0 +1,90 @@
+MemoryTile := Rectangle {
+    callback clicked;
+    property <bool> open_curtain;
+    property <bool> solved;
+    property <image> icon;
+
+    Image {
+        property <int> scale;
+        scale: 85;
+        source: icon;
+        width: parent.width * (scale/100);
+        height: parent.height * (scale/100);
+        x: parent.width * (1/2 - (scale/200));
+        y: parent.height * (1/2 - (scale/200));
+    }
+
+    width: 64px;
+    height: 64px;
+    background: solved ? #34CE57 : #3960D5;
+
+    // Left curtain
+    Rectangle {
+        background: #193076;
+        width: open_curtain ? 0px : (parent.width / 2);
+        height: parent.height;
+        animate width { duration: 250ms; easing: ease-in; }
+    }
+
+    // Right curtain
+    Rectangle {
+        background: #193076;
+        x: open_curtain ? parent.width : (parent.width / 2);
+        width: open_curtain ? 0px : (parent.width / 2);
+        height: parent.height;
+        animate width { duration: 250ms; easing: ease-in; }
+        animate x { duration: 250ms; easing: ease-in; }
+    }
+
+
+    TouchArea {
+        clicked => {
+            // Delegate to the user of this element
+            root.clicked();
+        }
+    }
+}
+
+struct TileData := {
+    image: image,
+    image_visible: bool,
+    solved: bool,
+}
+
+MainWindow := Window {
+    title: "Tile Game";
+    width: 311px;
+    height: 311px;
+
+    callback check_if_pair_solved();
+    callback check_if_game_finished();
+    property <bool> disable_tiles;
+    property <bool> finished;
+
+    property <[TileData]> memory_tiles: [
+        { image: @image-url("icons/at.png") },
+        { image: @image-url("icons/balance-scale.png") },
+        { image: @image-url("icons/bicycle.png") },
+        { image: @image-url("icons/bus.png") },
+        { image: @image-url("icons/cogs.png") },
+        { image: @image-url("icons/cloud.png") },
+        { image: @image-url("icons/motorcycle.png") },
+        { image: @image-url("icons/video.png") },
+    ];
+
+    for tile[i] in memory_tiles : MemoryTile {
+        x: mod(i, 4) * 74px + mod(i, 4) * 1px + 10px;
+        y: floor(i / 4) * 74px + ceil(i / 4) * 1px + 10px;
+        icon: tile.image;
+        open_curtain: tile.image_visible || tile.solved;
+        // propagate the solved status from the model to the tile
+        solved: tile.solved;
+        clicked => {
+            if (!root.disable_tiles) {
+                tile.image_visible = !tile.image_visible;
+                root.check_if_pair_solved();
+                root.check_if_game_finished();
+            }
+        }
+    }
+}
