@@ -5,13 +5,13 @@ MemoryTile := Rectangle {
     property <image> icon;
 
     Image {
-        property <int> scale;
-        scale: 85;
+        property <percent> scale;
+        scale: 85%;
         source: icon;
-        width: parent.width * (scale/100);
-        height: parent.height * (scale/100);
-        x: parent.width * (1/2 - (scale/200));
-        y: parent.height * (1/2 - (scale/200));
+        width: parent.width * (scale);
+        height: parent.height * (scale);
+        x: parent.width * (1/2 - (scale/2));
+        y: parent.height * (1/2 - (scale/2));
     }
 
     width: 64px;
