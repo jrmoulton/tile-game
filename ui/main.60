@@ -53,6 +53,7 @@ struct TileData := {
 
 MainWindow := Window {
     title: "Tile Game";
+    icon: @image-url("icons/at.png");
     width: 311px;
     height: 311px;
 
